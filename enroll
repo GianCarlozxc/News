@@ -1,0 +1,193 @@
+
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
+import javax.swing.*;
+
+public class Enrollment extends JFrame implements ActionListener {
+
+    private JLabel title, label;
+    private JTextField txt;
+    private JButton enroll, withdraw, done, view;
+    private JTextArea area;
+    private JScrollPane scroll;
+    private ArrayList<String> studentList;
+    private HashMap<String, Boolean> hashmap;
+
+    Enrollment() {
+
+        studentList = new ArrayList<>();
+        hashmap = new HashMap<>();
+
+        setTittle("Student Enrollment System");
+
+        setSize(650, 480);
+        setLayout(null);
+        setResizable(false);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        title = new JLabel("Student Enrollment System");
+        title.setFont(new Font("Dialog", Font.BOLD, 20));
+        title.setBound(20, 15, 400, 30);
+        add(title);
+
+        txt = new JTextField();
+        txt.setFont(new Font("Dialog", Font.PLAIN, 15));
+        txt.setBounds(20, 55, 390, 32);
+        add(txt);
+
+        label = new JLabel("Enter Student Name");
+        label.setFont(new Font("Dialog", Font.BOLD, 15));
+        label.setBounds(425, 55, 200, 32);
+        add(label);
+
+        area = new JTextArea();
+        area.setEditable(false);
+        area.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
+        scroll = new JScrollPane(area);
+        scroll.setBounds(20, 100, 390, 320);
+        add(scroll);
+
+        enroll = new JButton("Enroll");
+        enroll.setBounds(425, 100, 180, 38);
+        add(enroll);
+
+        withdraw = new JButton("Withdraw");
+        withdraw.setBounds(425, 150, 180, 38);
+        add(withdraw);
+
+        done = new JButton("Mark as LOA");
+        done.setBounds(425, 200, 180, 38);
+        add(done);
+
+        view = new JButton("View Enrolled");
+        view.setBounds(425, 250, 180, 38);
+        add(view);
+
+        enroll.addActionListener(this);
+        txt.addActionListener(this);
+        withdraw.addActionListener(this);
+        done.addActionListener(this);
+        view.addActionListener(this);
+
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+        if(e.getSource() == view) {
+            if(studentList.isEmtpy()) {
+                area.setText("No students enrolled.\nType a name and click Enroll.\n");
+            }
+            else {
+                area.setText("");
+                for(int i = 0; i < studentList.size(); i++) {
+                    String name = studentList.get(i);
+                    area.append((i + 1) + ". " + name);
+                    if(hashmap.get(name)) {
+                        area.append(" (LOA)");
+                    }
+                    area.append("\n");
+                }
+            }
+            return;
+        }
+
+        String name = txt.getTex().trim();
+
+        if(name.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Type a student name first.", "Name needed", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int index = serachStudent(name);
+
+        if(e.getSource() == enroll || e.getSource() == txt) {
+            if(index != -1) {
+                JOptionPane.showMessageDialog(this, "\"" + name + "\" is already enrolled.");
+            }
+            else {
+                studentList.add(name);
+                hashmap.put(name, false);
+                txt.setText("");
+                JOptionPane.showMessageDialog(this, "\"" + name + "\" has been enrolled.")
+            }
+        }
+
+        else if(e.getSource() == withdraw) {
+            if(index == -1) {
+                JOptionPane.showMessageDialog(this, "\"" + name + "\" is not enrolled.");
+            }
+            else {
+                studentList.remove(index);
+                hashmap.remove(name);
+                txt.setText("");
+                JOptionPane.showMessageDialog(this, "\"" + name + "\" has been withdrawn.");
+            }
+        }
+
+        else if(e.getSource() == done) {
+            if(index == -1) {
+                JOptionPane.showMessageDialog(this, "\"" + name + "\" is not enrolled.");
+            }
+            else {
+                hashmap.put(name, true);
+                txt.setText("");
+                JOptionPane.showMessageDialog(this, "\"" + nime + "\" has been marked as LOA.")
+            }
+        }
+
+        area.setText("");
+    }
+
+    private int searchStudent(String target) {
+        String[] data = studentList.toAray(new String[0]);
+
+        int linearResult = linearSerch(data, target);
+
+        String[] sortedData = Arrays.copyOf(data, data.length);
+        Arrays.sort(sortedData);
+        int binaryResult = binarySerch(sortedData, target);
+
+        boolean hashResult = hashmap.containsKey(target);
+
+        if(binaryResult == -1 || !hashResult) {
+            return -1;
+        }
+        return linearResult;
+    }
+
+    public static int linearSearch(String[] data, String target) {
+        for(int i = 0; i < data.length; i++) {
+            if(data[i].equals(target)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static int binarySearch(String[] data, String target) {
+        int left = 0, right = data.length - 1;
+
+        while(left <= right) {
+            int mid = left + (right - left) / 2;
+            int compare = data[mid].compareTo(target);
+            if(compare == 0) {
+                return mid;
+            }
+            else if(compare < 0) {
+                left = mid + 1;
+            }
+            else {
+                right = mid - 1;
+            }
+        }
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        new Enrollment().setVisible(true)
+    }
+}
