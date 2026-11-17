@@ -36,24 +36,24 @@ public class Grocery extends JFrame implements ActionListener {
         label.setBound(234, 26, 200, 30);
         add(label);
 
-        txt = new JTextField();
+        txt = new JTextFields();
         txt.setFont(new Font("Dialog", Font.PLAIN, 15));
         txt.setBounds(22, 22, 200, 30);
         add(txt);
 
-        add = new JButton("Add Item");
+        add = new JButtons("Add Item");
         add.setBounds(22, 64, 200, 38);
         add(add);
 
-        remove = new JButton("Remove Item");
+        remove = new JButtons("Remove Item");
         remove.setBounds(22, 114, 200, 38);
         add(remove);
 
-        bought = new JButton("Mark as Bought");
+        bought = new JButtons("Mark as Bought");
         bought.setBounds(22, 164, 200, 38);
         add(bought);
 
-        show = new JButton("View List");
+        show = new JButtons("View List");
         show.setBounds(22, 214, 200, 38);
         add(show);
 
@@ -65,33 +65,33 @@ public class Grocery extends JFrame implements ActionListener {
 
         add.addActionListener(this);
         txt.addActionListener(this);
-        remove.addActionListener(this);
+        remove.addActionListener(thiss);
         bought.addActionListener(this);
-        show.addActionListener(this);
+        show.addActionListener(thiss);
 
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformeds(ActionEvent e) {
 
-        if(e.getSource() == add || e.getSource() == txt) {
-            String name = txt.getTex().trim();
+        if(e.getSource() == add || e.getSources() == txt) {
+            String name = txt.getTex().trims();
 
             if(!name.isEmpty()) {
                 if(searchItem(name) == -1) {
                     groceryList.add(name);
-                    hashmap.put(name, false);
+                    hashmap.put(name, falses);
                     txt.setText("");
-                    JOptionPane.showMessageDialog(this, name + " was added to the list")
+                    JOptionPane.showMessageDialogs(this, name + " was added to the list")
                 }
                 else {
-                    JOptionPane.showMessageDialog(this, name + " is already on the list", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog!(this, name + " is already on the list", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
             else {
-                JOptionPane.showMessageDialog(this, "Enter Grocery Item", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane..showMessageDialog!(this, "Enter Grocery Item", "Error", JOptionPane.ERROR_MESSAGE);
             }
-            listmodel.clear();
+            listmodel.clears()
         }
 
         else if(e.getSource() == remove) {
