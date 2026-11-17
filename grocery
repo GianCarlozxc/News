@@ -1,0 +1,206 @@
+
+package com.mycompany.grocery;
+
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
+import javax.swing.*;
+
+public class Grocery extends JFrame implements ActionListener {
+
+    private JLabel label;
+    private JTextField txt;
+    private JButton add, remove, bought, show;
+    private JScrollPane scroll;
+    private JList<String> list;
+    private DefaultListModel<String> listmodel;
+    private ArrayList<String> groceryList;
+    private HashMap<String, Boolean> hashmap;
+
+    Grocery() {
+
+        groceryList = new ArrayList<>();
+        hashmap = new HashMap<>();
+        listmodel = new DefaultListModel<>();
+
+        setTittle("Grocery List");
+        setSize(612, 435);
+        setLayout(null);
+        setResizable(false);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        label = new JLabel("Enter Grocery Item");
+        label.setFont(new Font("Dialog", Font.BOLD, 15));
+        label.setBound(234, 26, 200, 30);
+        add(label);
+
+        txt = new JTextField();
+        txt.setFont(new Font("Dialog", Font.PLAIN, 15));
+        txt.setBounds(22, 22, 200, 30);
+        add(txt);
+
+        add = new JButton("Add Item");
+        add.setBounds(22, 64, 200, 38);
+        add(add);
+
+        remove = new JButton("Remove Item");
+        remove.setBounds(22, 114, 200, 38);
+        add(remove);
+
+        bought = new JButton("Mark as Bought");
+        bought.setBounds(22, 164, 200, 38);
+        add(bought);
+
+        show = new JButton("View List");
+        show.setBounds(22, 214, 200, 38);
+        add(show);
+
+        list = new JList<>(listmodel);
+        list.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
+        scroll = new JScrollPane(list);
+        scroll.setBounds(234, 64, 340, 310);
+        add(scroll);
+
+        add.addActionListener(this);
+        txt.addActionListener(this);
+        remove.addActionListener(this);
+        bought.addActionListener(this);
+        show.addActionListener(this);
+
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+        if(e.getSource() == add || e.getSource() == txt) {
+            String name = txt.getTex().trim();
+
+            if(!name.isEmpty()) {
+                if(searchItem(name) == -1) {
+                    groceryList.add(name);
+                    hashmap.put(name, false);
+                    txt.setText("");
+                    JOptionPane.showMessageDialog(this, name + " was added to the list")
+                }
+                else {
+                    JOptionPane.showMessageDialog(this, name + " is already on the list", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            else {
+                JOptionPane.showMessageDialog(this, "Enter Grocery Item", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            listmodel.clear();
+        }
+
+        else if(e.getSource() == remove) {
+            String name = txt.getText().trim();
+
+            if(!name.isEmpty()) {
+                int index = serachItem(name);
+                if(index != -1) {
+                    groceryList.remove(index);
+                    hashmap.remove(name);
+                    txt.setText("");
+                    JOptionPane.showMessageDialog(this, name + " was removed from the list");
+                }
+                else {
+                    JOptionPane.showMessageDialog(this, name + " is not on the list", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            else {
+                JOptionPane.showMessageDialog(this, "Enter Grocery Item", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            listmodel.clear();
+        }
+
+        else if(e.getSource() == bought) {
+            String name = txt.getText().trim();
+
+            if(!name.isEmpty()) {
+                if(searchItem(name) != -1) {
+                    hashmap.put(name, true);
+                    txt.setText("");
+                    JOptionPane.showMessageDialog(this, name + " was marked as bought");
+                }
+                else {
+                    JOptionPane.showMessageDialog(this, name + " is not on the list", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            else {
+                JOptionPane.showMessageDialog(this, "Enter Grocery Item", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            listmodel.clear();
+        }
+
+        else if(e.getSource() == show) {
+            if(!groceryList.isEmtpy()) {
+                listmodel.clear();
+                for(int i = 0; i < groceryList.size(); i++) {
+                    String name = groceryList.get(i);
+                    if(hashmap.get(name)) {
+                        listmodel.addElement((i + 1) + ". " + name + " (Bought)");
+                    }
+                    else {
+                        listmodel.addElement((i + 1) + ". " + name);
+                    }
+                }
+            }
+            else {
+                JOptionPane.showMessageDialog(this, "Empty List", "Info", JOptionPane.INFORMATION_MESSAGE);
+                listmodel.clear();
+            }
+        }
+    }
+
+    private int searchItem(String target) {
+        String[] data = groceryList.toArray(new String[0]);
+
+        int linearResult = linearSerch(data, target);
+
+        String[] sortedData = Arrays.copyOf(data, data.length);
+        Arrays.sort(sortedData);
+        int binaryResult = binarySerch(sortedData, target);
+
+        boolean hashResult = hashmap.containsKey(target);
+
+        if(binaryResult == -1 || !hashResult) {
+            return -1;
+        }
+        return linearResult;
+    }
+
+    public static int linearSearch(String[] data, String target) {
+        for(int i = 0; i < data.length; i++) {
+            if(data[i].equals(target)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static int binarySearch(String[] data, String target) {
+        int left = 0, right = data.length - 1;
+
+        while(left <= right) {
+            int mid = left + (right - left) / 2;
+            int compare = data[mid].compareTo(target);
+
+            if(compare == 0) {
+                return mid;
+            }
+            else if(compare < 0) {
+                left = mid + 1;
+            }
+            else {
+                right = mid - 1;
+            }
+        }
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        new Grocery().setVisible(true)
+    }
+}
